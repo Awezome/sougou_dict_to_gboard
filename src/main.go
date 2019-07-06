@@ -2,12 +2,16 @@ package main
 
 import (
 	"archive/zip"
+	"bufio"
 	"encoding/binary"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"golang.org/x/text/encoding/unicode"
@@ -24,6 +28,21 @@ type PinyinWord []map[string]interface{}
 func main() {
 	root := os.Args[1]
 	path := root + "/scel/"
+
+	// download scel
+	scelMap := make(map[int]string)
+	scelMap[4] = "网络流行新词【官方推荐】"
+	scelMap[1206] = "最新 汉语新词语选目"
+	scelMap[3] = "宋词精选【官方推荐】"
+	scelMap[15097] = "成语俗语【官方推荐】"
+	scelMap[1] = "唐诗300首【官方推荐】"
+	scelMap[15206] = "动物词汇大全【官方推荐】"
+	scelMap[15128] = "法律词汇大全【官方推荐】"
+
+	for k, v := range scelMap {
+		download(path, k, v)
+	}
+
 	dir, _ := ioutil.ReadDir(path)
 	for _, fi := range dir {
 		real := strings.HasSuffix(fi.Name(), ".scel")
@@ -217,4 +236,23 @@ func toString(b []byte) string {
 
 func toInt(b []byte) int {
 	return int(binary.LittleEndian.Uint16(b))
+}
+
+func download(path string, id int, name string) {
+	urlName := url.QueryEscape(strings.Trim(name, " "))
+	downloadUrl := "https://pinyin.sogou.com/d/dict/download_cell.php?id=" + strconv.Itoa(id) + "&name=" + urlName + "&f=detail"
+	res, err := http.Get(downloadUrl)
+	if err != nil {
+		fmt.Println("A error occurred!")
+		return
+	}
+	defer res.Body.Close()
+	reader := bufio.NewReaderSize(res.Body, 32*1024)
+	file, err := os.Create(path + name + ".scel")
+	if err != nil {
+		panic(err)
+	}
+	writer := bufio.NewWriter(file)
+	io.Copy(writer, reader)
+	fmt.Println("download " + name)
 }
