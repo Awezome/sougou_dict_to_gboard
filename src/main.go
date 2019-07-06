@@ -30,18 +30,19 @@ func main() {
 	path := root + "/scel/"
 
 	// download scel
-	scelMap := make(map[int]string)
-	scelMap[4] = "网络流行新词【官方推荐】"
-	scelMap[1206] = "最新 汉语新词语选目"
-	scelMap[3] = "宋词精选【官方推荐】"
-	scelMap[15097] = "成语俗语【官方推荐】"
-	scelMap[1] = "唐诗300首【官方推荐】"
-	scelMap[15206] = "动物词汇大全【官方推荐】"
-	scelMap[15128] = "法律词汇大全【官方推荐】"
+	// scelMap := make(map[int]string)
+	// scelMap[4] = "网络流行新词【官方推荐】"
+	// scelMap[1206] = "最新 汉语新词语选目"
+	// scelMap[3] = "宋词精选【官方推荐】"
+	// scelMap[15097] = "成语俗语【官方推荐】"
+	// scelMap[1] = "唐诗300首【官方推荐】"
+	// scelMap[15206] = "动物词汇大全【官方推荐】"
+	// scelMap[15128] = "法律词汇大全【官方推荐】"
+	// scelMap[807] = "全国省市区县地名"
 
-	for k, v := range scelMap {
-		download(path, k, v)
-	}
+	// for k, v := range scelMap {
+	// 	download(path, k, v)
+	// }
 
 	dir, _ := ioutil.ReadDir(path)
 	for _, fi := range dir {
@@ -49,6 +50,8 @@ func main() {
 		if !real {
 			continue
 		}
+
+		fmt.Println("start parse " + fi.Name())
 		fileName := path + fi.Name()
 		content, _ := ioutil.ReadFile(fileName)
 		wordData := parse(content)
@@ -62,6 +65,7 @@ func main() {
 		os.Remove(zipPath)
 		zipFile(dictPath, zipPath)
 		os.Remove(dictPath)
+		fmt.Println("finish parse " + fi.Name())
 	}
 }
 
@@ -241,6 +245,7 @@ func toInt(b []byte) int {
 func download(path string, id int, name string) {
 	urlName := url.QueryEscape(strings.Trim(name, " "))
 	downloadUrl := "https://pinyin.sogou.com/d/dict/download_cell.php?id=" + strconv.Itoa(id) + "&name=" + urlName + "&f=detail"
+	fmt.Println(downloadUrl)
 	res, err := http.Get(downloadUrl)
 	if err != nil {
 		fmt.Println("A error occurred!")
@@ -254,5 +259,4 @@ func download(path string, id int, name string) {
 	}
 	writer := bufio.NewWriter(file)
 	io.Copy(writer, reader)
-	fmt.Println("download " + name)
 }
