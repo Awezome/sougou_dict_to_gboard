@@ -1,0 +1,1 @@
+# sougou_dict_to_gboard
