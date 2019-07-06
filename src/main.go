@@ -1,9 +1,13 @@
 package main
 
 import (
+	"archive/zip"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/text/encoding/unicode"
@@ -18,10 +22,9 @@ var PY_MAGIC = [...]byte{0x9D, 0x01, 0x00, 0x00}
 type PinyinWord []map[string]interface{}
 
 func main() {
-
-	path := "./"
+	root := os.Args[1]
+	path := root + "/scel/"
 	dir, _ := ioutil.ReadDir(path)
-
 	for _, fi := range dir {
 		real := strings.HasSuffix(fi.Name(), ".scel")
 		if !real {
@@ -31,12 +34,64 @@ func main() {
 		content, _ := ioutil.ReadFile(fileName)
 		wordData := parse(content)
 
-		outputToGboardImport(wordData, fileName+".txt")
+		dictPath := root + "/dict_with_import/dictionary.txt"
+		zipPath := root + "/dict_with_import/" + fi.Name() + ".zip"
+		outputToGboardImport(wordData, dictPath)
+		os.Remove(zipPath)
+		zipFile(dictPath, zipPath)
+		os.Remove(dictPath)
 	}
 }
 
+func zipFile(srcFile string, destZip string) error {
+	zipfile, err := os.Create(destZip)
+	if err != nil {
+		return err
+	}
+	defer zipfile.Close()
+
+	archive := zip.NewWriter(zipfile)
+	defer archive.Close()
+
+	filepath.Walk(srcFile, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+
+		header.Name = strings.TrimPrefix(path, filepath.Dir(srcFile)+"/")
+		// header.Name = path
+		if info.IsDir() {
+			header.Name += "/"
+		} else {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := archive.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			file, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+			_, err = io.Copy(writer, file)
+		}
+		return err
+	})
+
+	return err
+}
+
 func outputToGboardImport(wordData PinyinWord, out string) {
-	content := ""
+	content := "# Gboard Dictionary version:1\n"
 
 	for _, line := range wordData {
 		pinyin := strings.Join(line["p"].([]string), "")
@@ -122,7 +177,6 @@ func parseWord(b []byte, wordData *PinyinWord) {
 			b = b[extLen:]
 			w = append(w, word)
 		}
-		fmt.Println(pinyin, w)
 		pinyinWord["p"] = pinyin
 		pinyinWord["w"] = w
 		*wordData = append(*wordData, pinyinWord)
