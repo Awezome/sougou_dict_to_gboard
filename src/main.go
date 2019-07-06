@@ -34,7 +34,10 @@ func main() {
 		content, _ := ioutil.ReadFile(fileName)
 		wordData := parse(content)
 
-		dictPath := root + "/dict_with_import/dictionary.txt"
+		dictPath := root + "/dict_with_tool/" + fi.Name() + ".txt"
+		outputToGboardTool(wordData, dictPath)
+
+		dictPath = root + "/dict_with_import/dictionary.txt"
 		zipPath := root + "/dict_with_import/" + fi.Name() + ".zip"
 		outputToGboardImport(wordData, dictPath)
 		os.Remove(zipPath)
@@ -100,6 +103,22 @@ func outputToGboardImport(wordData PinyinWord, out string) {
 		}
 	}
 
+	err := ioutil.WriteFile(out, []byte(content), 0644)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func outputToGboardTool(wordData PinyinWord, out string) {
+	content := ""
+
+	for _, line := range wordData {
+		pinyin := strings.Join(line["p"].([]string), "")
+		for _, word := range line["w"].([]string) {
+			content = content + "[\"zh\",\"" + pinyin + "\",\"" + word + "\"],"
+		}
+	}
+	content = "[" + strings.TrimRight(content, ",") + "]"
 	err := ioutil.WriteFile(out, []byte(content), 0644)
 	if err != nil {
 		panic(err)
