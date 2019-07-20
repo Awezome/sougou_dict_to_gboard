@@ -49,9 +49,9 @@ func main() {
 		}
 		ws.Add(1)
 		go func() {
+			defer ws.Done()
 			s := SougouParser{root: root}
 			s.OutPutOne(path, dictName)
-			defer ws.Done()
 		}()
 	}
 	ws.Wait()

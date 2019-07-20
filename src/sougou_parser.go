@@ -23,25 +23,26 @@ type SougouParser struct {
 	root      string
 	wordData  []map[string]interface{}
 	pinyinMap []string
+	dictName  string
 }
 
-func (s *SougouParser) OutPutOne(path string, dictName string) {
-	fmt.Println("start parse " + dictName)
-	fileName := path + dictName
+func (s *SougouParser) OutPutOne(path string, fileName string) {
+	fmt.Println("start parse " + fileName)
+	fileName = path + fileName
 	content, _ := ioutil.ReadFile(fileName)
 
 	s.parse(content)
 
-	dictPath := s.root + "/dict_with_tool/" + dictName + ".txt"
+	dictPath := s.root + "/dict_with_tool/" + s.dictName + ".txt"
 	s.outputToGboardTool(dictPath)
 
 	dictPath = s.root + "/dict_with_import/dictionary.txt"
-	zipPath := s.root + "/dict_with_import/" + dictName + ".zip"
+	zipPath := s.root + "/dict_with_import/" + s.dictName + ".zip"
 	s.outputToGboardImport(dictPath)
 	os.Remove(zipPath)
 	s.zipFile(dictPath, zipPath)
 	os.Remove(dictPath)
-	fmt.Println("finish parse " + dictName)
+	fmt.Println("finish parse " + s.dictName)
 }
 
 func (s *SougouParser) outputToGboardImport(out string) {
@@ -77,6 +78,9 @@ func (s *SougouParser) outputToGboardTool(out string) {
 }
 
 func (s *SougouParser) parse(data []byte) {
+	s.dictName = s.toString(data[0x130:0x338])
+	//fmt.Println(s.dictName)
+
 	//fmt.Println(s.toString(data[0x130:0x338]))
 	//fmt.Println(toString(data[0x338:0x540]))
 	//fmt.Println(toString(data[0x540:0xD40]))
@@ -88,11 +92,14 @@ func (s *SougouParser) parse(data []byte) {
 }
 
 func (s *SougouParser) join() {
+	pinyinMapLen := len(s.pinyinMap)
 	for k, data := range s.wordData {
 		newPinyin := make([]string, 0)
 		pinyin := data["p"].([]int)
 		for _, v := range pinyin {
-			newPinyin = append(newPinyin, s.pinyinMap[v])
+			if v < pinyinMapLen {
+				newPinyin = append(newPinyin, s.pinyinMap[v])
+			}
 		}
 		s.wordData[k]["p"] = newPinyin
 	}
