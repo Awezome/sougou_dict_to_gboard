@@ -27,6 +27,8 @@ func main() {
 	scelMap[15206] = "动物词汇大全【官方推荐】"
 	scelMap[15128] = "法律词汇大全【官方推荐】"
 	scelMap[807] = "全国省市区县地名"
+	scelMap[470] = "重庆方言"
+	scelMap[265] = "重庆区域地名"
 
 	//download
 	download := &Downloader{
