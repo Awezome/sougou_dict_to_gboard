@@ -15,34 +15,35 @@ var dictTool = "./dict_with_tool"
 func main() {
 	dictMap := loadDictConfig()
 
-	err := CreateDir(savePath)
-	if err != nil {
+	if err := CreateDir(savePath); err != nil {
 		exit(err)
 	}
-	err = CreateDir(dictImport)
-	if err != nil {
+	if err := CreateDir(dictImport); err != nil {
 		exit(err)
 	}
-	err = CreateDir(dictTool)
-	if err != nil {
+	if err := CreateDir(dictTool); err != nil {
 		exit(err)
 	}
 
 	for id, name := range dictMap {
-		down := &Downloader{
-			Id:       id,
-			Name:     name,
-			SavePath: savePath,
-		}
-		err := down.One()
-		if err != nil {
-			exit(err)
-		}
-
-		dictName := savePath + name + ".scel"
-		s := SougouParser{}
-		s.OutPutOne(dictName)
+		worker(id, name)
 	}
+}
+
+func worker(id string, name string) {
+	down := &Downloader{
+		Id:       id,
+		Name:     name,
+		SavePath: savePath,
+	}
+	err := down.One()
+	if err != nil {
+		exit(err)
+	}
+
+	dictName := savePath + name + ".scel"
+	s := SougouParser{}
+	s.OutPutOne(dictName)
 }
 
 func loadDictConfig() map[string]string {
