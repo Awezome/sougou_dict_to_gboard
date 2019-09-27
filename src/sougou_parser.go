@@ -26,9 +26,8 @@ type SougouParser struct {
 	dictName  string
 }
 
-func (s *SougouParser) OutPutOne(path string, fileName string) {
+func (s *SougouParser) OutPutOne(fileName string) {
 	fmt.Println("start parse " + fileName)
-	fileName = path + fileName
 	content, _ := ioutil.ReadFile(fileName)
 
 	s.parse(content)

@@ -4,40 +4,40 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"os"
-	"strconv"
-	"strings"
-	"sync"
 )
 
+var downPrefix = "https://pinyin.sogou.com/d/dict/download_cell.php?"
+
 type Downloader struct {
-	names map[int]string
-	path  string
+	Id       string
+	Name     string
+	SavePath string
 }
 
-func (d *Downloader) Run() error {
-	var wg sync.WaitGroup
-	for id, name := range d.names {
-		urlName := url.QueryEscape(strings.Trim(name, " "))
-		downloadUrl := "https://pinyin.sogou.com/d/dict/download_cell.php?id=" + strconv.Itoa(id) + "&name=" + urlName + "&f=detail"
-		path := d.path + name + ".scel"
+func (d *Downloader) One() error {
+	link := downPrefix + "id=" + d.Id + "&name=" + d.Name
+	name := d.SavePath + d.Name + ".scel"
 
-		wg.Add(1)
-		go func() error {
-			err := d.download(downloadUrl, path)
-			defer wg.Done()
-			return err
-		}()
+	ex, err := DirExists(d.SavePath)
+	if err != nil {
+		exit(err)
 	}
-	wg.Wait()
-	return nil
+	if !ex {
+		err := os.MkdirAll(d.SavePath, os.ModePerm)
+		if err != nil {
+			exit(err)
+		}
+	}
+
+	return d.download(link, name)
 }
 
 func (d *Downloader) download(downloadUrl string, path string) error {
+	fmt.Println(downloadUrl)
 	res, err := http.Get(downloadUrl)
 	if err != nil {
-		fmt.Println("A error occurred!")
+		fmt.Println("download failed")
 		return err
 	}
 	defer res.Body.Close()

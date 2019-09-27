@@ -1,60 +1,59 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
-	"sync"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("run scel_path")
-		os.Exit(1)
-	}
+	dictMap := loadDictConfig()
 
-	root := os.Args[1]
-	path := root + "/scel/"
-
-	// define scel
-	scelMap := make(map[int]string)
-	scelMap[4] = "网络流行新词【官方推荐】"
-	scelMap[1206] = "最新 汉语新词语选目"
-	scelMap[3] = "宋词精选【官方推荐】"
-	scelMap[15097] = "成语俗语【官方推荐】"
-	scelMap[1] = "唐诗300首【官方推荐】"
-	scelMap[15206] = "动物词汇大全【官方推荐】"
-	scelMap[15128] = "法律词汇大全【官方推荐】"
-	scelMap[807] = "全国省市区县地名"
-	scelMap[470] = "重庆方言"
-	scelMap[265] = "重庆区域地名"
-
-	//download
-	download := &Downloader{
-		names: scelMap,
-		path:  path,
-	}
-	err := download.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//parse
-	var ws sync.WaitGroup
-	dir, _ := ioutil.ReadDir(path)
-	for _, fi := range dir {
-		dictName := fi.Name()
-		real := strings.HasSuffix(dictName, ".scel")
-		if !real {
-			continue
+	savePath := "./download/"
+	for id, name := range dictMap {
+		down := &Downloader{
+			Id:       id,
+			Name:     name,
+			SavePath: savePath,
 		}
-		ws.Add(1)
-		go func() {
-			defer ws.Done()
-			s := SougouParser{root: root}
-			s.OutPutOne(path, dictName)
-		}()
+		err := down.One()
+		if err != nil {
+			exit(err)
+		}
+
+		dictName := savePath + name + ".scel"
+		s := SougouParser{root: "."}
+		s.OutPutOne(dictName)
 	}
-	ws.Wait()
+}
+
+func loadDictConfig() map[string]string {
+	file, err := os.Open("./dict.txt")
+	if err != nil {
+		exit("文件打开失败")
+	}
+	defer file.Close()
+
+	br := bufio.NewReader(file)
+
+	dictMap := make(map[string]string)
+	for {
+		line, _, end := br.ReadLine()
+		if end == io.EOF {
+			break
+		}
+
+		lineSlice := strings.Split(string(line), "|")
+		if len(lineSlice) == 2 {
+			dictMap[lineSlice[0]] = lineSlice[1]
+		}
+	}
+	return dictMap
+}
+
+func exit(s interface{}) {
+	fmt.Println(s)
+	os.Exit(1)
 }
