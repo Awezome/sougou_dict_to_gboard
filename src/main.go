@@ -8,10 +8,26 @@ import (
 	"strings"
 )
 
+var savePath = "./download/"
+var dictImport = "./dict_with_import"
+var dictTool = "./dict_with_tool"
+
 func main() {
 	dictMap := loadDictConfig()
 
-	savePath := "./download/"
+	err := CreateDir(savePath)
+	if err != nil {
+		exit(err)
+	}
+	err = CreateDir(dictImport)
+	if err != nil {
+		exit(err)
+	}
+	err = CreateDir(dictTool)
+	if err != nil {
+		exit(err)
+	}
+
 	for id, name := range dictMap {
 		down := &Downloader{
 			Id:       id,
@@ -24,7 +40,7 @@ func main() {
 		}
 
 		dictName := savePath + name + ".scel"
-		s := SougouParser{root: "."}
+		s := SougouParser{}
 		s.OutPutOne(dictName)
 	}
 }

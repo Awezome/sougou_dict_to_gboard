@@ -18,18 +18,6 @@ type Downloader struct {
 func (d *Downloader) One() error {
 	link := downPrefix + "id=" + d.Id + "&name=" + d.Name
 	name := d.SavePath + d.Name + ".scel"
-
-	ex, err := DirExists(d.SavePath)
-	if err != nil {
-		exit(err)
-	}
-	if !ex {
-		err := os.MkdirAll(d.SavePath, os.ModePerm)
-		if err != nil {
-			exit(err)
-		}
-	}
-
 	return d.download(link, name)
 }
 

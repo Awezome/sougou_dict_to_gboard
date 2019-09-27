@@ -20,7 +20,6 @@ var MAGIC = [...]byte{0x40, 0x15, 0x00, 0x00, 0x44, 0x43, 0x53, 0x01, 0x01, 0x00
 var PY_MAGIC = [...]byte{0x9D, 0x01, 0x00, 0x00}
 
 type SougouParser struct {
-	root      string
 	wordData  []map[string]interface{}
 	pinyinMap []string
 	dictName  string
@@ -32,11 +31,11 @@ func (s *SougouParser) OutPutOne(fileName string) {
 
 	s.parse(content)
 
-	dictPath := s.root + "/dict_with_tool/" + s.dictName + ".txt"
+	dictPath := dictTool + "/" + s.dictName + ".txt"
 	s.outputToGboardTool(dictPath)
 
-	dictPath = s.root + "/dict_with_import/dictionary.txt"
-	zipPath := s.root + "/dict_with_import/" + s.dictName + ".zip"
+	dictPath = dictImport + "/dictionary.txt"
+	zipPath := dictImport + "/" + s.dictName + ".zip"
 	s.outputToGboardImport(dictPath)
 	os.Remove(zipPath)
 	s.zipFile(dictPath, zipPath)
