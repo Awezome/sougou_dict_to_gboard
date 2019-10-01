@@ -37,5 +37,6 @@ mac 下载 sougou_to_gboard_mac + dict.txt
 https://github.com/Awezome/sougou_dict_to_gboard/issues
 
 # 鼓励
-如果各位看官觉得小工具好用，有钱的打赏，没钱的点个star，多谢。
-![一分钱也是爱]](https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/wechat_pay.png)
+如果小工具好用，右上角点个star。有钱的打个赏，一分钱也是爱，我要买棒棒糖吃。多谢。
+
+![一分钱也是爱](https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/wechat_pay.png)
