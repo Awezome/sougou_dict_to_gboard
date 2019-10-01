@@ -1,6 +1,6 @@
-# 搜狗词库转手机Gboard词库工具
+# 搜狗词库转手机Gboard词库工具
 
-本工具可以自动下载并转换搜狗词库到Gboard词库
+本工具可以自动下载并转换搜狗词库到Gboard词库
 
 # 使用说明
 1. 在搜狗词库找到你想要转的词库 https://pinyin.sogou.com/dict/
@@ -22,5 +22,5 @@
 470|重庆方言
 265|重庆区域地名
 ```
-5. windows 双击运行 sougou_to_gboard.ext , mac 用命令行运行 sougou_to_gboard
+5. windows 双击运行 sougou_to_gboard.exe , mac 用命令行运行 sougou_to_gboard
 6. 生成了来两个目录，一个是dict_with_import，里面的词库可以用gboard自带的导入功能导入。另一个是dict_with_tool，里面用工具导入，方法见酷安gboard下的热贴。
