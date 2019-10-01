@@ -39,4 +39,4 @@ https://github.com/Awezome/sougou_dict_to_gboard/issues
 # 鼓励
 如果小工具好用，右上角点个star。有钱的微信打个赏，一分钱也是爱，我要买棒棒糖吃。多谢。
 
-<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/wechat_pay.png" width = "300" height = "300"/>
+<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/273f661b33c5dc15be2deafd17bc68282f737dc6/wechat_pay.png" width = "300" height = "300"/>
