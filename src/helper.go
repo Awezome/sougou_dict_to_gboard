@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
 func CreateDir(path string) error {
 	ex, err := DirExists(path)
@@ -25,4 +28,8 @@ func DirExists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+func GetCurrentDir() (string, error) {
+	return filepath.Abs(filepath.Dir(os.Args[0]))
 }

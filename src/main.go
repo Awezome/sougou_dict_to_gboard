@@ -8,9 +8,22 @@ import (
 	"strings"
 )
 
-var savePath = "./download/"
-var dictImport = "./dict_with_import"
-var dictTool = "./dict_with_tool"
+var savePath string
+var dictImport string
+var dictTool string
+var dictTxt string
+
+func init() {
+	dir, err := GetCurrentDir()
+	if err != nil {
+		exit("can not get current dir")
+	}
+
+	savePath = dir + "/download/"
+	dictImport = dir + "/dict_with_import"
+	dictTool = dir + "/dict_with_tool"
+	dictTxt = dir + "/dict.txt"
+}
 
 func main() {
 	dictMap := loadDictConfig()
@@ -47,9 +60,9 @@ func worker(id string, name string) {
 }
 
 func loadDictConfig() map[string]string {
-	file, err := os.Open("./dict.txt")
+	file, err := os.Open(dictTxt)
 	if err != nil {
-		exit("文件打开失败")
+		exit(" dictTxt 打开失败")
 	}
 	defer file.Close()
 
