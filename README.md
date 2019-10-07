@@ -30,7 +30,7 @@ mac 下载 sougou_to_gboard_mac + dict.txt
 470|重庆方言
 265|重庆区域地名
 ```
-5. windows 双击运行 sougou_to_gboard_win.exe , mac 用命令行运行 sougou_to_gboard_mac
+5. windows 双击运行 sougou_to_gboard_win.exe , mac 用双击运行 sougou_to_gboard_mac
 6. 生成了来两个目录，一个是dict_with_import，里面的词库可以用gboard自带的导入功能导入。另一个是dict_with_tool，里面用工具导入，方法见酷安gboard下的热贴。
 
 # 问题反馈
