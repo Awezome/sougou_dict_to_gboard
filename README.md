@@ -31,12 +31,12 @@ mac 下载 sougou_to_gboard_mac + dict.txt
 265|重庆区域地名
 ```
 5. windows 双击运行 sougou_to_gboard_win.exe , mac 用双击运行 sougou_to_gboard_mac
-6. 生成了来两个目录，一个是dict_with_import，里面的词库可以用gboard自带的导入功能导入。另一个是dict_with_tool，里面用工具导入，方法见酷安gboard下的热贴。
+6. 生成两个目录，一个是dict_with_import，里面的词库可以用gboard自带的导入功能导入。另一个是dict_with_tool，里面用工具导入，方法见酷安gboard下的热贴。
 
 # 问题反馈
 https://github.com/Awezome/sougou_dict_to_gboard/issues
 
 # 鼓励
-如果小工具好用，右上角点个star。有钱的微信打个赏，一分钱也是爱，我要买棒棒糖吃。多谢。
+如果小工具好用，右上角点个star。有钱的微信打个赏。多谢。
 
 <img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/273f661b33c5dc15be2deafd17bc68282f737dc6/wechat_pay.png" width = "300" height = "300"/>
