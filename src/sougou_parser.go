@@ -2,7 +2,9 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -25,11 +27,14 @@ type SougouParser struct {
 	dictName  string
 }
 
-func (s *SougouParser) OutPutOne(fileName string) {
-	fmt.Println("start parse " + fileName)
+func (s *SougouParser) OutPutOne(fileName string) error {
+	fmt.Println("start parse ")
 	content, _ := ioutil.ReadFile(fileName)
 
-	s.parse(content)
+	err := s.parse(content)
+	if err != nil {
+		return err
+	}
 
 	dictPath := dictTool + "/" + s.dictName + ".txt"
 	s.outputToGboardTool(dictPath)
@@ -41,6 +46,7 @@ func (s *SougouParser) OutPutOne(fileName string) {
 	s.zipFile(dictPath, zipPath)
 	os.Remove(dictPath)
 	fmt.Println("finish parse " + s.dictName)
+	return nil
 }
 
 func (s *SougouParser) outputToGboardImport(out string) {
@@ -75,7 +81,12 @@ func (s *SougouParser) outputToGboardTool(out string) {
 	}
 }
 
-func (s *SougouParser) parse(data []byte) {
+func (s *SougouParser) parse(data []byte) error {
+	flag := []byte{64, 21, 0, 0, 68, 67, 83, 1, 1, 0}
+	if !bytes.Equal(flag, data[:10]) {
+		return errors.New("the download file is not dict")
+	}
+
 	s.dictName = s.toString(data[0x130:0x338])
 	//fmt.Println(s.dictName)
 
@@ -87,6 +98,7 @@ func (s *SougouParser) parse(data []byte) {
 	s.parsePinyin(data[PINGYIN_START:WORD_START])
 	s.parseWord(data[WORD_START:])
 	s.join()
+	return nil
 }
 
 func (s *SougouParser) join() {

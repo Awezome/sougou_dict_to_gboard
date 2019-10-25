@@ -35,6 +35,6 @@ func (d *Downloader) download(downloadUrl string, path string) error {
 	}
 	defer file.Close()
 	_, err = io.Copy(file, res.Body)
-	fmt.Println("download finish " + path)
+	fmt.Println("download finish ")
 	return err
 }

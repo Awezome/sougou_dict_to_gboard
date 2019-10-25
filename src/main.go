@@ -56,7 +56,11 @@ func worker(id string, name string) {
 
 	dictName := savePath + name + ".scel"
 	s := SougouParser{}
-	s.OutPutOne(dictName)
+	err = s.OutPutOne(dictName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println()
 }
 
 func loadDictConfig() map[string]string {
