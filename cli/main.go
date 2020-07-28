@@ -4,7 +4,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"gboard_dict/dict"
+	"io/ioutil"
 	"os"
+
+	"github.com/mholt/archiver/v3"
 )
 
 type arrayFlags []string
@@ -41,7 +45,9 @@ func main() {
 
 func worker(url string) error {
 	var err error
-	url, err = HtmlParser(url)
+
+	d := &dict.Downloader{}
+	url, err = d.HtmlParser(url)
 	if err != nil {
 		return err
 	}
@@ -49,14 +55,35 @@ func worker(url string) error {
 		return errors.New("url is empty")
 	}
 
-	down := &Downloader{
-		Url: url,
-	}
-	bytes, err := down.GetBytes()
+	bytes, err := d.GetBytes(url)
 	if err != nil {
 		return err
 	}
 
-	s := SougouParser{}
-	return s.OutPutOne(bytes)
+	fmt.Println("start parse ")
+
+	s := dict.SougouParser{}
+	err = s.Parse(bytes)
+	if err != nil {
+		return err
+	}
+
+	txtPath := "./" + s.DictName + ".txt"
+	zipPath := "./" + s.DictName + ".zip"
+	os.Remove(zipPath)
+	os.Remove(txtPath)
+	content := s.FormatToImport()
+
+	err = ioutil.WriteFile(txtPath, []byte(content), 0644)
+	if err != nil {
+		return err
+	}
+
+	err = archiver.Archive([]string{txtPath}, zipPath)
+	if err != nil {
+		return err
+	}
+	os.Remove(txtPath)
+
+	return nil
 }

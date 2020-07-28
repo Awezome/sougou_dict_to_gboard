@@ -1,13 +1,27 @@
-package main
+package dict
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func HtmlParser(url string) (string, error) {
+type Downloader struct{}
+
+func (d *Downloader) GetBytes(url string) ([]byte, error) {
+	fmt.Println(url)
+	res, err := http.Get(url)
+	if err != nil {
+		fmt.Println("download failed")
+		return []byte{}, err
+	}
+	defer res.Body.Close()
+	return ioutil.ReadAll(res.Body)
+}
+
+func (d *Downloader) HtmlParser(url string) (string, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return "", err

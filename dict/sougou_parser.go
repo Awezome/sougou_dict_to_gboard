@@ -1,15 +1,11 @@
-package main
+package dict
 
 import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"os"
 	"strings"
 
-	"github.com/mholt/archiver/v3"
 	"golang.org/x/text/encoding/unicode"
 )
 
@@ -20,30 +16,13 @@ var MAGIC = [...]byte{0x40, 0x15, 0x00, 0x00, 0x44, 0x43, 0x53, 0x01, 0x01, 0x00
 var PY_MAGIC = [...]byte{0x9D, 0x01, 0x00, 0x00}
 
 type SougouParser struct {
+	DictName string
+
 	wordData  []map[string]interface{}
 	pinyinMap []string
-	dictName  string
 }
 
-func (s *SougouParser) OutPutOne(content []byte) error {
-	fmt.Println("start parse ")
-
-	err := s.parse(content)
-	if err != nil {
-		return err
-	}
-
-	txtPath := "./" + s.dictName + ".txt"
-	zipPath := "./" + s.dictName + ".zip"
-	os.Remove(zipPath)
-	os.Remove(txtPath)
-	s.outputToGboardImport(txtPath)
-	err = archiver.Archive([]string{txtPath}, zipPath)
-	os.Remove(txtPath)
-	return err
-}
-
-func (s *SougouParser) outputToGboardImport(out string) error {
+func (s *SougouParser) FormatToImport() string {
 	content := "# Gboard Dictionary version:1\n"
 
 	for _, line := range s.wordData {
@@ -53,10 +32,11 @@ func (s *SougouParser) outputToGboardImport(out string) error {
 		}
 	}
 
-	return ioutil.WriteFile(out, []byte(content), 0644)
+	//return ioutil.WriteFile(out, []byte(content), 0644)
+	return content
 }
 
-func (s *SougouParser) outputToGboardTool(out string) error {
+func (s *SougouParser) FormatToTool() string {
 	content := ""
 
 	for _, line := range s.wordData {
@@ -66,16 +46,16 @@ func (s *SougouParser) outputToGboardTool(out string) error {
 		}
 	}
 	content = "[" + strings.TrimRight(content, ",") + "]"
-	return ioutil.WriteFile(out, []byte(content), 0644)
+	return content
 }
 
-func (s *SougouParser) parse(data []byte) error {
+func (s *SougouParser) Parse(data []byte) error {
 	flag := []byte{64, 21, 0, 0, 68, 67, 83, 1, 1, 0}
 	if !bytes.Equal(flag, data[:10]) {
 		return errors.New("the download file is not dict")
 	}
 
-	s.dictName = s.toString(data[0x130:0x338])
+	s.DictName = s.toString(data[0x130:0x338])
 	//fmt.Println(s.dictName)
 
 	//fmt.Println(s.toString(data[0x130:0x338]))
