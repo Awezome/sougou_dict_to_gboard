@@ -12,8 +12,8 @@ mac 下载 sougou_to_gboard_mac
 # 使用说明
 1. 在搜狗词库网站找到你想要转的词库 https://pinyin.sogou.com/dict/
 2. 比如，网络流行新词，它的网址是 https://pinyin.sogou.com/dict/detail/index/4 
-3. 运行 ./sougou_to_gboard_mac -url=https://pinyin.sogou.com/dict/detail/index/4
-4. windows 使用 sougou_to_gboard_win.exe , mac 使用 sougou_to_gboard_mac
+3. windows 将 sougou_to_gboard_win.exe 拖动到*命令提示符*里, mac 将 sougou_to_gboard_mac 拖动到*终端*里
+4. 运行 sougou_to_gboard_mac -url=https://pinyin.sogou.com/dict/detail/index/4
 
 
 # 问题反馈
