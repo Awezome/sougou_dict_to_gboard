@@ -70,20 +70,18 @@ func worker(url string) error {
 
 	txtPath := "./" + s.DictName + ".txt"
 	zipPath := "./" + s.DictName + ".zip"
-	os.Remove(zipPath)
-	os.Remove(txtPath)
 	content := s.FormatToImport()
-
 	err = ioutil.WriteFile(txtPath, []byte(content), 0644)
 	if err != nil {
 		return err
 	}
 
+	os.Remove(zipPath)
 	err = archiver.Archive([]string{txtPath}, zipPath)
+	os.Remove(txtPath)
 	if err != nil {
 		return err
 	}
-	os.Remove(txtPath)
 
 	return nil
 }
