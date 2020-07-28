@@ -1,17 +1,15 @@
 package main
 
 import (
-	"archive/zip"
 	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 
+	"github.com/mholt/archiver/v3"
 	"golang.org/x/text/encoding/unicode"
 )
 
@@ -27,29 +25,25 @@ type SougouParser struct {
 	dictName  string
 }
 
-func (s *SougouParser) OutPutOne(fileName string) error {
+func (s *SougouParser) OutPutOne(content []byte) error {
 	fmt.Println("start parse ")
-	content, _ := ioutil.ReadFile(fileName)
 
 	err := s.parse(content)
 	if err != nil {
 		return err
 	}
 
-	dictPath := dictTool + "/" + s.dictName + ".txt"
-	s.outputToGboardTool(dictPath)
-
-	dictPath = dictImport + "/dictionary.txt"
-	zipPath := dictImport + "/" + s.dictName + ".zip"
-	s.outputToGboardImport(dictPath)
+	txtPath := "./" + s.dictName + ".txt"
+	zipPath := "./" + s.dictName + ".zip"
 	os.Remove(zipPath)
-	s.zipFile(dictPath, zipPath)
-	os.Remove(dictPath)
-	fmt.Println("finish parse " + s.dictName)
-	return nil
+	os.Remove(txtPath)
+	s.outputToGboardImport(txtPath)
+	err = archiver.Archive([]string{txtPath}, zipPath)
+	os.Remove(txtPath)
+	return err
 }
 
-func (s *SougouParser) outputToGboardImport(out string) {
+func (s *SougouParser) outputToGboardImport(out string) error {
 	content := "# Gboard Dictionary version:1\n"
 
 	for _, line := range s.wordData {
@@ -59,13 +53,10 @@ func (s *SougouParser) outputToGboardImport(out string) {
 		}
 	}
 
-	err := ioutil.WriteFile(out, []byte(content), 0644)
-	if err != nil {
-		panic(err)
-	}
+	return ioutil.WriteFile(out, []byte(content), 0644)
 }
 
-func (s *SougouParser) outputToGboardTool(out string) {
+func (s *SougouParser) outputToGboardTool(out string) error {
 	content := ""
 
 	for _, line := range s.wordData {
@@ -75,10 +66,7 @@ func (s *SougouParser) outputToGboardTool(out string) {
 		}
 	}
 	content = "[" + strings.TrimRight(content, ",") + "]"
-	err := ioutil.WriteFile(out, []byte(content), 0644)
-	if err != nil {
-		panic(err)
-	}
+	return ioutil.WriteFile(out, []byte(content), 0644)
 }
 
 func (s *SougouParser) parse(data []byte) error {
@@ -182,51 +170,4 @@ func (s *SougouParser) toString(b []byte) string {
 
 func (s *SougouParser) toInt(b []byte) int {
 	return int(binary.LittleEndian.Uint16(b))
-}
-
-func (s *SougouParser) zipFile(srcFile string, destZip string) error {
-	zipfile, err := os.Create(destZip)
-	if err != nil {
-		return err
-	}
-	defer zipfile.Close()
-
-	archive := zip.NewWriter(zipfile)
-	defer archive.Close()
-
-	filepath.Walk(srcFile, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		header, err := zip.FileInfoHeader(info)
-		if err != nil {
-			return err
-		}
-
-		header.Name = strings.TrimPrefix(path, filepath.Dir(srcFile)+"/")
-		// header.Name = path
-		if info.IsDir() {
-			header.Name += "/"
-		} else {
-			header.Method = zip.Deflate
-		}
-
-		writer, err := archive.CreateHeader(header)
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() {
-			file, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-			_, err = io.Copy(writer, file)
-		}
-		return err
-	})
-
-	return err
 }
