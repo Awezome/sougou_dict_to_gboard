@@ -82,6 +82,6 @@ func worker(url string) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("finish parse ")
 	return nil
 }
