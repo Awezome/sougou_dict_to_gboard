@@ -2,45 +2,46 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"gboard_dict/dict"
 	"io/ioutil"
 	"os"
 
-	"github.com/mholt/archiver/v3"
+	"github.com/mholt/archiver"
+	"github.com/therecipe/qt/widgets"
 )
 
-type arrayFlags []string
-
-func (i *arrayFlags) String() string {
-	return ""
-}
-
-func (i *arrayFlags) Set(value string) error {
-	*i = append(*i, value)
-	return nil
-}
-
-var urls arrayFlags
-
-func init() {
-	flag.Var(&urls, "url", "url")
-	flag.Parse()
-	if len(urls) == 0 {
-		flag.Usage()
-		os.Exit(1)
-	}
-}
-
 func main() {
-	for _, url := range urls {
-		err := worker(url)
+	app := widgets.NewQApplication(len(os.Args), os.Args)
+
+	window := widgets.NewQMainWindow(nil, 0)
+	window.SetMinimumSize2(350, 200)
+	window.SetWindowTitle("Hello Widgets Example")
+
+	widget := widgets.NewQWidget(nil, 0)
+	widget.SetLayout(widgets.NewQVBoxLayout())
+	window.SetCentralWidget(widget)
+
+	input := widgets.NewQLineEdit(nil)
+	input.SetPlaceholderText("Write something ...")
+	widget.Layout().AddWidget(input)
+
+	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
+	widget.Layout().AddWidget(input)
+
+	button := widgets.NewQPushButton2("and click me!", nil)
+	button.ConnectClicked(func(bool) {
+		err := worker(input.Text())
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			widgets.QMessageBox_Information(nil, "Failed", err.Error(), widgets.QMessageBox__Ok, widgets.QMessageBox__Ok)
+		} else {
+			widgets.QMessageBox_Information(nil, "OK", "成功", widgets.QMessageBox__Ok, widgets.QMessageBox__Ok)
 		}
-	}
+	})
+	widget.Layout().AddWidget(button)
+
+	window.Show()
+	app.Exec()
 }
 
 func worker(url string) error {

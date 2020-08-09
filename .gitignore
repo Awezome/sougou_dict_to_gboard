@@ -7,3 +7,7 @@ scel_bk
 download
 release
 *.zip
+vendor
+deploy
+darwin
+windows
