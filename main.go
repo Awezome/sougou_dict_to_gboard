@@ -2,44 +2,70 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"gboard_dict/dict"
 	"io/ioutil"
 	"os"
 
-	"github.com/mholt/archiver"
+	"github.com/mholt/archiver/v3"
+	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/widgets"
 )
 
+type CustomLabel struct {
+	widgets.QLabel
+	_ func()       `constructor:"init"`
+	_ func(string) `signal:"updateTextFromGoroutine"`
+}
+
+func (c *CustomLabel) init() {
+	c.ConnectUpdateTextFromGoroutine(c.SetText)
+}
+
+var label *CustomLabel
+
+// type mainThreadHelper struct {
+// 	core.QObject
+// 	_ func(f func()) `signal:"runOnMain,auto`
+// }
+//func (*mainThreadHelper) runOnMain(f func()) { f() }
+//var MainThreadRunner = NewMainThreadHelper(nil)
+
 func main() {
 	app := widgets.NewQApplication(len(os.Args), os.Args)
-
 	window := widgets.NewQMainWindow(nil, 0)
-	window.SetMinimumSize2(350, 200)
-	window.SetWindowTitle("Hello Widgets Example")
-
-	widget := widgets.NewQWidget(nil, 0)
-	widget.SetLayout(widgets.NewQVBoxLayout())
-	window.SetCentralWidget(widget)
+	//window.SetMinimumSize2(350, 500)
+	window.SetWindowTitle("搜狗词库转Gboard词库工具")
 
 	input := widgets.NewQLineEdit(nil)
 	input.SetPlaceholderText("Write something ...")
-	widget.Layout().AddWidget(input)
-
 	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
-	widget.Layout().AddWidget(input)
 
-	button := widgets.NewQPushButton2("and click me!", nil)
+	label = NewCustomLabel(nil, 0)
+	label.SetAlignment(core.Qt__AlignCenter)
+	//label.SetFixedHeight(10)
+
+	button := widgets.NewQPushButton2("Start", nil)
 	button.ConnectClicked(func(bool) {
-		err := worker(input.Text())
-		if err != nil {
-			widgets.QMessageBox_Information(nil, "Failed", err.Error(), widgets.QMessageBox__Ok, widgets.QMessageBox__Ok)
-		} else {
-			widgets.QMessageBox_Information(nil, "OK", "成功", widgets.QMessageBox__Ok, widgets.QMessageBox__Ok)
-		}
+		button.SetDisabled(true)
+		go func() {
+			err := worker(input.Text())
+			if err != nil {
+				label.UpdateTextFromGoroutine(err.Error())
+			} else {
+				label.UpdateTextFromGoroutine("成功")
+			}
+			button.SetDisabled(false)
+		}()
 	})
-	widget.Layout().AddWidget(button)
 
+	layout := widgets.NewQGridLayout2()
+	layout.AddWidget3(input, 0, 0, 1, 2, 0)
+	layout.AddWidget2(label, 1, 0, 0)
+	layout.AddWidget2(button, 1, 1, 0)
+
+	widget := widgets.NewQWidget(window, 0)
+	widget.SetLayout(layout)
+	window.SetCentralWidget(widget)
 	window.Show()
 	app.Exec()
 }
@@ -61,7 +87,7 @@ func worker(url string) error {
 		return err
 	}
 
-	fmt.Println("start parse ")
+	label.UpdateTextFromGoroutine("start parse")
 
 	s := dict.SougouParser{}
 	err = s.Parse(bytes)
@@ -83,6 +109,6 @@ func worker(url string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("finish parse ")
+	label.UpdateTextFromGoroutine("finish parse")
 	return nil
 }
