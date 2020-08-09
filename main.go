@@ -17,20 +17,21 @@ var dom *sciter.Element
 var domMessage *sciter.Element
 
 func main() {
-	w, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_ENABLE_DEBUG,
+	win, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_ENABLE_DEBUG,
 		&sciter.Rect{Left: 100, Top: 100, Right: 400, Bottom: 286})
 	if err != nil {
 		log.Fatal("Create Window Error: ", err)
 	}
-	w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_SYSINFO)
-	w.LoadFile("index.html")
+	win.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_SYSINFO)
+	win.LoadFile("index.html")
 
-	dom, _ = w.GetRootElement()
+	dom, _ = win.GetRootElement()
 	domMessage, _ = dom.SelectFirst("#message")
 
-	setEventHandler(w)
-	w.Show()
-	w.Run()
+	setEventHandler(win)
+	win.AddQuitMenu()
+	win.Show()
+	win.Run()
 }
 
 func setEventHandler(w *window.Window) {
