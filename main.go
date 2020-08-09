@@ -17,10 +17,12 @@ var dom *sciter.Element
 var domMessage *sciter.Element
 
 func main() {
-	w, err := window.New(sciter.SW_TITLEBAR|sciter.SW_RESIZEABLE|sciter.SW_CONTROLS|sciter.SW_MAIN|sciter.SW_ENABLE_DEBUG, nil)
+	w, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_ENABLE_DEBUG,
+		&sciter.Rect{Left: 100, Top: 100, Right: 400, Bottom: 286})
 	if err != nil {
 		log.Fatal("Create Window Error: ", err)
 	}
+	w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_SYSINFO)
 	w.LoadFile("index.html")
 
 	dom, _ = w.GetRootElement()
@@ -32,16 +34,18 @@ func main() {
 }
 
 func setEventHandler(w *window.Window) {
-
 	w.DefineFunction("getNetInformation", func(args ...*sciter.Value) *sciter.Value {
 		url := args[0].String()
 		fmt.Println(url)
 
+		domButton, _ := dom.SelectFirst("#btn")
+		domButton.SetState(sciter.STATE_DISABLED, 0, true)
 		go func() {
 			err := worker(url)
 			if err != nil {
 				writeMessage(err.Error())
 			}
+			domButton.SetState(0, sciter.STATE_DISABLED, true)
 		}()
 
 		return sciter.NullValue()
