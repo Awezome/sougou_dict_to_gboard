@@ -34,15 +34,16 @@ func main() {
 	app := widgets.NewQApplication(len(os.Args), os.Args)
 	window := widgets.NewQMainWindow(nil, 0)
 	window.SetFixedWidth(350)
-	window.SetFixedHeight(200)
+	window.SetFixedHeight(160)
 	window.SetWindowTitle("搜狗词库转Gboard词库工具")
 
 	title := widgets.NewQLabel2("搜狗词库转Gboard词库工具V2.0", nil, 0)
-	title.SetAlignment(core.Qt__AlignVCenter | core.Qt__AlignHCenter)
-	title.SetStyleSheet("font-size:18px")
+	title.SetAlignment(core.Qt__AlignCenter)
+	title.SetStyleSheet("font-size:18px;")
+	title.SetFixedHeight(50)
 
 	info := widgets.NewQLabel2("<a href='https://github.com/Awezome/sougou_dict_to_gboard'>使用说明</a>  <a href='https://github.com/Awezome/sougou_dict_to_gboard/releases'>检查更新</a>", nil, 0)
-	info.SetAlignment(core.Qt__AlignLeft)
+	info.SetAlignment(core.Qt__AlignLeft | core.Qt__AlignBottom)
 	info.SetOpenExternalLinks(true)
 
 	input := widgets.NewQLineEdit(nil)
@@ -51,7 +52,6 @@ func main() {
 
 	label = NewCustomLabel(nil, 0)
 	label.SetAlignment(core.Qt__AlignLeft)
-	//label.SetFixedHeight(10)
 
 	button := widgets.NewQPushButton2("Start", nil)
 	button.ConnectClicked(func(bool) {
@@ -66,11 +66,11 @@ func main() {
 	})
 
 	layout := widgets.NewQGridLayout2()
-	layout.AddWidget3(title, 0, 0, 3, 2, 0)
+	layout.AddWidget3(title, 0, 0, 1, 2, 0)
 	layout.AddWidget3(input, 1, 0, 1, 2, 0)
 	layout.AddWidget2(label, 2, 0, 0)
-	layout.AddWidget2(button, 3, 1, 0)
-	layout.AddWidget2(info, 4, 0, 0)
+	layout.AddWidget2(button, 2, 1, 0)
+	layout.AddWidget2(info, 3, 0, 0)
 
 	widget := widgets.NewQWidget(window, 0)
 	widget.SetLayout(layout)
