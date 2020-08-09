@@ -2,7 +2,6 @@
 
 本工具可以自动下载并转换搜狗词库到Gboard词库
 
-<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/screenshot.png" width = "300" height = "300"/>
 
 # 下载地址
 https://github.com/Awezome/sougou_dict_to_gboard/releases
