@@ -33,15 +33,24 @@ var label *CustomLabel
 func main() {
 	app := widgets.NewQApplication(len(os.Args), os.Args)
 	window := widgets.NewQMainWindow(nil, 0)
-	//window.SetMinimumSize2(350, 500)
+	window.SetFixedWidth(350)
+	window.SetFixedHeight(200)
 	window.SetWindowTitle("搜狗词库转Gboard词库工具")
 
+	title := widgets.NewQLabel2("搜狗词库转Gboard词库工具V2.0", nil, 0)
+	title.SetAlignment(core.Qt__AlignVCenter | core.Qt__AlignHCenter)
+	title.SetStyleSheet("font-size:18px")
+
+	info := widgets.NewQLabel2("<a href='https://github.com/Awezome/sougou_dict_to_gboard'>使用说明</a>  <a href='https://github.com/Awezome/sougou_dict_to_gboard/releases'>检查更新</a>", nil, 0)
+	info.SetAlignment(core.Qt__AlignLeft)
+	info.SetOpenExternalLinks(true)
+
 	input := widgets.NewQLineEdit(nil)
-	input.SetPlaceholderText("Write something ...")
+	input.SetPlaceholderText("请输入搜狗词库网址...")
 	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
 
 	label = NewCustomLabel(nil, 0)
-	label.SetAlignment(core.Qt__AlignCenter)
+	label.SetAlignment(core.Qt__AlignLeft)
 	//label.SetFixedHeight(10)
 
 	button := widgets.NewQPushButton2("Start", nil)
@@ -51,17 +60,17 @@ func main() {
 			err := worker(input.Text())
 			if err != nil {
 				label.UpdateTextFromGoroutine(err.Error())
-			} else {
-				label.UpdateTextFromGoroutine("成功")
 			}
 			button.SetDisabled(false)
 		}()
 	})
 
 	layout := widgets.NewQGridLayout2()
-	layout.AddWidget3(input, 0, 0, 1, 2, 0)
-	layout.AddWidget2(label, 1, 0, 0)
-	layout.AddWidget2(button, 1, 1, 0)
+	layout.AddWidget3(title, 0, 0, 3, 2, 0)
+	layout.AddWidget3(input, 1, 0, 1, 2, 0)
+	layout.AddWidget2(label, 2, 0, 0)
+	layout.AddWidget2(button, 3, 1, 0)
+	layout.AddWidget2(info, 4, 0, 0)
 
 	widget := widgets.NewQWidget(window, 0)
 	widget.SetLayout(layout)
@@ -72,7 +81,7 @@ func main() {
 
 func worker(url string) error {
 	var err error
-
+	label.UpdateTextFromGoroutine("开始加载...")
 	d := &dict.Downloader{}
 	url, err = d.HtmlParser(url)
 	if err != nil {
@@ -81,13 +90,14 @@ func worker(url string) error {
 	if url == "" {
 		return errors.New("url is empty")
 	}
+	label.UpdateTextFromGoroutine("解析词库下载链接...")
 
 	bytes, err := d.GetBytes(url)
 	if err != nil {
 		return err
 	}
 
-	label.UpdateTextFromGoroutine("start parse")
+	label.UpdateTextFromGoroutine("转换中...")
 
 	s := dict.SougouParser{}
 	err = s.Parse(bytes)
@@ -109,6 +119,6 @@ func worker(url string) error {
 	if err != nil {
 		return err
 	}
-	label.UpdateTextFromGoroutine("finish parse")
+	label.UpdateTextFromGoroutine("转换完成")
 	return nil
 }
