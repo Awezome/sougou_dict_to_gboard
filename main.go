@@ -17,8 +17,8 @@ var dom *sciter.Element
 var domMessage *sciter.Element
 
 func main() {
-	win, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_ENABLE_DEBUG,
-		&sciter.Rect{Left: 100, Top: 100, Right: 400, Bottom: 286})
+	win, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_CONTROLS|sciter.SW_ENABLE_DEBUG,
+		&sciter.Rect{Left: 100, Top: 100, Right: 420, Bottom: 290})
 	if err != nil {
 		log.Fatal("Create Window Error: ", err)
 	}
