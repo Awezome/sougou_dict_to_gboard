@@ -1,0 +1,11 @@
+<div>
+    <input type="text" name="url" value="https://pinyin.sogou.com/dict/detail/index/4"/>
+    <button id="btn">Click Me</button>
+    <div id="message"></div>
+</div>
+<script type="text/tiscript">
+$(#btn).on("click",function(){
+    var url=$(input[name="url"]).value.trim()
+    view.getNetInformation(url);
+});
+</script>
