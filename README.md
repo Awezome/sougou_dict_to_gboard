@@ -4,7 +4,7 @@
 
 
 
-<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/screenshot.png" width = "500" height = "180"/>
+<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/screenshot.png" width = "450" height = "280"/>
 
 
 # 下载地址
