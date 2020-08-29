@@ -2,11 +2,11 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"gboard_dict/dict"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/mholt/archiver/v3"
 	"github.com/sciter-sdk/go-sciter"
@@ -89,8 +89,6 @@ func main() {
 func setEventHandler(w *window.Window) {
 	w.DefineFunction("getNetInformation", func(args ...*sciter.Value) *sciter.Value {
 		url := args[0].String()
-		fmt.Println(url)
-
 		domButton, _ := dom.SelectFirst("#btn")
 		domButton.SetState(sciter.STATE_DISABLED, 0, true)
 		go func() {
@@ -130,8 +128,10 @@ func worker(url string) error {
 		return err
 	}
 	writeMessage("生成词库文本...")
-	txtPath := s.DictName + ".txt"
-	zipPath := s.DictName + ".zip"
+
+	dir, _ := os.Getwd()
+	txtPath := filepath.Join(dir, s.DictName+".txt")
+	zipPath := filepath.Join(dir, s.DictName+".zip")
 	content := s.FormatToImport()
 	err = ioutil.WriteFile(txtPath, []byte(content), 0644)
 	if err != nil {
