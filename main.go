@@ -2,111 +2,79 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"gboard_dict/dict"
 	"io/ioutil"
-	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 
+	"fyne.io/fyne"
+	"fyne.io/fyne/app"
+	"fyne.io/fyne/layout"
+	"fyne.io/fyne/widget"
 	"github.com/mholt/archiver/v3"
-	"github.com/sciter-sdk/go-sciter"
-	"github.com/sciter-sdk/go-sciter/window"
 )
 
-var dom *sciter.Element
-var domMessage *sciter.Element
+var LabelInfo = widget.NewLabel("")
 
-const html = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <style>table {width: 100%;border-collapse: collapse;}table td {padding: 2px 0;height: 32px;border: 0 solid #ccc;}</style>
-</head>
-
-<body>
-    <table>
-        <tr>
-            <td colspan="2" style="text-align: center;height: 36px;">
-                <span style="font-size: 16px;">搜狗词库转Gboard工具</span>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input style="width: 100%;" type="text" name="url"
-                    value="https://pinyin.sogou.com/dict/detail/index/4" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div id="message"></div>
-            </td>
-            <td style="text-align: right;">
-                <button id="btn">Start</button>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" style="font-size: 12px;">
-                当前版本v2.0
-                <a href='https://github.com/Awezome/sougou_dict_to_gboard/releases'>检查更新</a>
-                <a href='https://github.com/Awezome/sougou_dict_to_gboard'>使用说明</a>
-            </td>
-        </tr>
-    </table>
-</body>
-<script type="text/tiscript">
-$(#btn).on("click",function(){
-    var url=$(input[name="url"]).value.trim()
-    view.getNetInformation(url);
-});
-self.on("click", "a[href^=http]", function(evt) {
-    var href = this.attributes["href"];
-    Sciter.launch(href);
-    return true;
-  });
-</script>
-</html>
-`
+var ButtonStart = &widget.Button{}
 
 func main() {
-	win, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_CONTROLS,
-		&sciter.Rect{Left: 100, Top: 100, Right: 450, Bottom: 300})
-	if err != nil {
-		log.Fatal("Create Window Error: ", err)
-	}
-	win.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_SYSINFO)
-	win.LoadHtml(html, "")
-
-	dom, _ = win.GetRootElement()
-	domMessage, _ = dom.SelectFirst("#message")
-
-	setEventHandler(win)
-	win.AddQuitMenu()
-	win.Show()
-	win.Run()
+	app := app.New()
+	ShowUI(app)
+	app.Run()
 }
 
-func setEventHandler(w *window.Window) {
-	w.DefineFunction("getNetInformation", func(args ...*sciter.Value) *sciter.Value {
-		url := args[0].String()
-		domButton, _ := dom.SelectFirst("#btn")
-		domButton.SetState(sciter.STATE_DISABLED, 0, true)
+func ShowUI(app fyne.App) {
+	window := app.NewWindow("搜狗词库转Gboard工具")
+
+	link, _ := url.Parse("https://github.com/Awezome/sougou_dict_to_gboard")
+
+	input := widget.NewEntry()
+	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
+
+	ButtonStart.Text = "Start"
+	ButtonStart.OnTapped = func() {
 		go func() {
-			err := worker(url)
+			ButtonStart.Disable()
+			err := worker(input.Text)
 			if err != nil {
 				writeMessage(err.Error())
 			}
-			domButton.SetState(0, sciter.STATE_DISABLED, true)
+			ButtonStart.Enable()
 		}()
+	}
+	ButtonStart.ExtendBaseWidget(ButtonStart)
 
-		return sciter.NullValue()
-	})
+	window.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(1),
+		widget.NewLabel("Sougou Dict to Gboard"),
+		input,
+		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
+			LabelInfo,
+			widget.NewLabel(""),
+			widget.NewLabel(""),
+			ButtonStart,
+		),
+		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
+			widget.NewHyperlink("version v2.1", link),
+			widget.NewLabel(""),
+			widget.NewLabel(""),
+			widget.NewLabel(""),
+		),
+	),
+	)
+	window.Resize(fyne.NewSize(440, 160))
+	window.SetFixedSize(true)
+	window.Show()
 }
 
 func worker(url string) error {
 	var err error
-	writeMessage("开始加载...")
+	writeMessage("load...")
+	fmt.Println(1)
 	d := &dict.Downloader{}
+	fmt.Println(2)
 	url, err = d.HtmlParser(url)
 	if err != nil {
 		return err
@@ -114,20 +82,20 @@ func worker(url string) error {
 	if url == "" {
 		return errors.New("url is empty")
 	}
-	writeMessage("下载...")
+	writeMessage("download...")
 	bytes, err := d.GetBytes(url)
 	if err != nil {
 		return err
 	}
 
-	writeMessage("读取...")
+	writeMessage("read...")
 
 	s := dict.SougouParser{}
 	err = s.Parse(bytes)
 	if err != nil {
 		return err
 	}
-	writeMessage("生成词库文本...")
+	writeMessage("parse...")
 
 	dir, _ := os.Getwd()
 	txtPath := filepath.Join(dir, s.DictName+".txt")
@@ -137,17 +105,17 @@ func worker(url string) error {
 	if err != nil {
 		return err
 	}
-	writeMessage("开始打包...")
+	writeMessage("zip...")
 	os.Remove(zipPath)
 	err = archiver.Archive([]string{txtPath}, zipPath)
 	os.Remove(txtPath)
 	if err != nil {
 		return err
 	}
-	writeMessage("完成")
+	writeMessage("finish")
 	return nil
 }
 
 func writeMessage(m string) {
-	domMessage.SetHtml(m, sciter.SIH_REPLACE_CONTENT)
+	LabelInfo.SetText(m)
 }
