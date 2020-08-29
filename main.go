@@ -16,6 +16,58 @@ import (
 var dom *sciter.Element
 var domMessage *sciter.Element
 
+const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>table {width: 100%;border-collapse: collapse;}table td {padding: 2px 0;height: 32px;border: 0 solid #ccc;}</style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td colspan="2" style="text-align: center;height: 36px;">
+                <span style="font-size: 16px;">搜狗词库转Gboard工具</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input style="width: 100%;" type="text" name="url"
+                    value="https://pinyin.sogou.com/dict/detail/index/4" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="message"></div>
+            </td>
+            <td style="text-align: right;">
+                <button id="btn">Start</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 12px;">
+                当前版本v2.0
+                <a href='https://github.com/Awezome/sougou_dict_to_gboard/releases'>检查更新</a>
+                <a href='https://github.com/Awezome/sougou_dict_to_gboard'>使用说明</a>
+            </td>
+        </tr>
+    </table>
+</body>
+<script type="text/tiscript">
+$(#btn).on("click",function(){
+    var url=$(input[name="url"]).value.trim()
+    view.getNetInformation(url);
+});
+self.on("click", "a[href^=http]", function(evt) {
+    var href = this.attributes["href"];
+    Sciter.launch(href);
+    return true;
+  });
+</script>
+</html>
+`
+
 func main() {
 	win, err := window.New(sciter.SW_TITLEBAR|sciter.SW_MAIN|sciter.SW_CONTROLS,
 		&sciter.Rect{Left: 100, Top: 100, Right: 450, Bottom: 300})
@@ -23,7 +75,7 @@ func main() {
 		log.Fatal("Create Window Error: ", err)
 	}
 	win.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_SYSINFO)
-	win.LoadFile("index.html")
+	win.LoadHtml(html, "")
 
 	dom, _ = win.GetRootElement()
 	domMessage, _ = dom.SelectFirst("#message")
@@ -78,8 +130,8 @@ func worker(url string) error {
 		return err
 	}
 	writeMessage("生成词库文本...")
-	txtPath := "./" + s.DictName + ".txt"
-	zipPath := "./" + s.DictName + ".zip"
+	txtPath := s.DictName + ".txt"
+	zipPath := s.DictName + ".zip"
 	content := s.FormatToImport()
 	err = ioutil.WriteFile(txtPath, []byte(content), 0644)
 	if err != nil {
