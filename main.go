@@ -16,13 +16,14 @@ import (
 	"github.com/mholt/archiver/v3"
 )
 
-var LabelInfo = widget.NewLabel("")
+const HomePage = "https://github.com/Awezome/sougou_dict_to_gboard"
 
+var LabelInfo = widget.NewLabel("")
 var ButtonStart = &widget.Button{}
 
 func main() {
 	a := app.New()
-	a.Settings().SetTheme(&myTheme{})
+	a.Settings().SetTheme(&BaseTheme{})
 	ShowUI(a)
 	a.Run()
 }
@@ -30,7 +31,7 @@ func main() {
 func ShowUI(app fyne.App) {
 	window := app.NewWindow("搜狗词库转Gboard工具")
 
-	link, _ := url.Parse("https://github.com/Awezome/sougou_dict_to_gboard")
+	link, _ := url.Parse(HomePage)
 
 	input := widget.NewEntry()
 	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
@@ -49,19 +50,19 @@ func ShowUI(app fyne.App) {
 	ButtonStart.ExtendBaseWidget(ButtonStart)
 
 	window.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		widget.NewLabel("搜狗词库转Gboard工具"),
+		widget.NewLabelWithStyle("搜狗词库转Gboard工具", fyne.TextAlignCenter, fyne.TextStyle{}),
 		input,
 		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 			LabelInfo,
-			widget.NewLabel(""),
-			widget.NewLabel(""),
+			fyne.NewContainerWithLayout(layout.NewGridLayout(1)),
+			fyne.NewContainerWithLayout(layout.NewGridLayout(1)),
 			ButtonStart,
 		),
 		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 			widget.NewHyperlink("version v2.1", link),
-			widget.NewLabel(""),
-			widget.NewLabel(""),
-			widget.NewLabel(""),
+			fyne.NewContainerWithLayout(layout.NewGridLayout(1)),
+			fyne.NewContainerWithLayout(layout.NewGridLayout(1)),
+			fyne.NewContainerWithLayout(layout.NewGridLayout(1)),
 		),
 	),
 	)

@@ -7,31 +7,32 @@ import (
 	"fyne.io/fyne/theme"
 )
 
-type myTheme struct{}
+var ui = theme.LightTheme()
 
-// return bundled font resource
-func (myTheme) TextFont() fyne.Resource     { return resourceFangZhengHeiTiJianTiTtf }
-func (myTheme) TextBoldFont() fyne.Resource { return resourceFangZhengHeiTiJianTiTtf }
+type BaseTheme struct{}
 
-func (myTheme) BackgroundColor() color.Color      { return theme.LightTheme().BackgroundColor() }
-func (myTheme) ButtonColor() color.Color          { return theme.LightTheme().ButtonColor() }
-func (myTheme) DisabledButtonColor() color.Color  { return theme.LightTheme().DisabledButtonColor() }
-func (myTheme) IconColor() color.Color            { return theme.LightTheme().IconColor() }
-func (myTheme) DisabledIconColor() color.Color    { return theme.LightTheme().DisabledIconColor() }
-func (myTheme) HyperlinkColor() color.Color       { return theme.LightTheme().HyperlinkColor() }
-func (myTheme) TextColor() color.Color            { return theme.LightTheme().TextColor() }
-func (myTheme) DisabledTextColor() color.Color    { return theme.LightTheme().DisabledTextColor() }
-func (myTheme) HoverColor() color.Color           { return theme.LightTheme().HoverColor() }
-func (myTheme) PlaceHolderColor() color.Color     { return theme.LightTheme().PlaceHolderColor() }
-func (myTheme) PrimaryColor() color.Color         { return theme.LightTheme().PrimaryColor() }
-func (myTheme) FocusColor() color.Color           { return theme.LightTheme().FocusColor() }
-func (myTheme) ScrollBarColor() color.Color       { return theme.LightTheme().ScrollBarColor() }
-func (myTheme) ShadowColor() color.Color          { return theme.LightTheme().ShadowColor() }
-func (myTheme) TextSize() int                     { return theme.LightTheme().TextSize() }
-func (myTheme) TextItalicFont() fyne.Resource     { return theme.LightTheme().TextItalicFont() }
-func (myTheme) TextBoldItalicFont() fyne.Resource { return theme.LightTheme().TextBoldItalicFont() }
-func (myTheme) TextMonospaceFont() fyne.Resource  { return theme.LightTheme().TextMonospaceFont() }
-func (myTheme) Padding() int                      { return theme.LightTheme().Padding() }
-func (myTheme) IconInlineSize() int               { return theme.LightTheme().IconInlineSize() }
-func (myTheme) ScrollBarSize() int                { return theme.LightTheme().ScrollBarSize() }
-func (myTheme) ScrollBarSmallSize() int           { return theme.LightTheme().ScrollBarSmallSize() }
+func (BaseTheme) TextFont() fyne.Resource     { return resourceFangZhengHeiTiJianTiTtf }
+func (BaseTheme) TextBoldFont() fyne.Resource { return resourceFangZhengHeiTiJianTiTtf }
+
+func (BaseTheme) BackgroundColor() color.Color      { return ui.BackgroundColor() }
+func (BaseTheme) ButtonColor() color.Color          { return ui.ButtonColor() }
+func (BaseTheme) DisabledButtonColor() color.Color  { return ui.DisabledButtonColor() }
+func (BaseTheme) IconColor() color.Color            { return ui.IconColor() }
+func (BaseTheme) DisabledIconColor() color.Color    { return ui.DisabledIconColor() }
+func (BaseTheme) HyperlinkColor() color.Color       { return ui.HyperlinkColor() }
+func (BaseTheme) TextColor() color.Color            { return ui.TextColor() }
+func (BaseTheme) DisabledTextColor() color.Color    { return ui.DisabledTextColor() }
+func (BaseTheme) HoverColor() color.Color           { return ui.HoverColor() }
+func (BaseTheme) PlaceHolderColor() color.Color     { return ui.PlaceHolderColor() }
+func (BaseTheme) PrimaryColor() color.Color         { return ui.PrimaryColor() }
+func (BaseTheme) FocusColor() color.Color           { return ui.FocusColor() }
+func (BaseTheme) ScrollBarColor() color.Color       { return ui.ScrollBarColor() }
+func (BaseTheme) ShadowColor() color.Color          { return ui.ShadowColor() }
+func (BaseTheme) TextSize() int                     { return ui.TextSize() }
+func (BaseTheme) TextItalicFont() fyne.Resource     { return ui.TextItalicFont() }
+func (BaseTheme) TextBoldItalicFont() fyne.Resource { return ui.TextBoldItalicFont() }
+func (BaseTheme) TextMonospaceFont() fyne.Resource  { return ui.TextMonospaceFont() }
+func (BaseTheme) Padding() int                      { return ui.Padding() }
+func (BaseTheme) IconInlineSize() int               { return ui.IconInlineSize() }
+func (BaseTheme) ScrollBarSize() int                { return ui.ScrollBarSize() }
+func (BaseTheme) ScrollBarSmallSize() int           { return ui.ScrollBarSmallSize() }
