@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"os/user"
 	"path/filepath"
+	"runtime"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
@@ -99,7 +101,14 @@ func worker(url string) error {
 	}
 	writeMessage("parse...")
 
-	dir, _ := os.Getwd()
+	var dir string
+	if runtime.GOOS == "windows" {
+		dir, _ = os.Getwd()
+	} else {
+		usr, _ := user.Current()
+		dir = usr.HomeDir
+	}
+
 	txtPath := filepath.Join(dir, s.DictName+".txt")
 	zipPath := filepath.Join(dir, s.DictName+".zip")
 	content := s.FormatToImport()
