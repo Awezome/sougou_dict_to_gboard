@@ -21,9 +21,10 @@ var LabelInfo = widget.NewLabel("")
 var ButtonStart = &widget.Button{}
 
 func main() {
-	app := app.New()
-	ShowUI(app)
-	app.Run()
+	a := app.New()
+	a.Settings().SetTheme(&myTheme{})
+	ShowUI(a)
+	a.Run()
 }
 
 func ShowUI(app fyne.App) {
@@ -34,7 +35,7 @@ func ShowUI(app fyne.App) {
 	input := widget.NewEntry()
 	input.SetText("https://pinyin.sogou.com/dict/detail/index/4")
 
-	ButtonStart.Text = "Start"
+	ButtonStart.Text = "开始"
 	ButtonStart.OnTapped = func() {
 		go func() {
 			ButtonStart.Disable()
@@ -48,7 +49,7 @@ func ShowUI(app fyne.App) {
 	ButtonStart.ExtendBaseWidget(ButtonStart)
 
 	window.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		widget.NewLabel("Sougou Dict to Gboard"),
+		widget.NewLabel("搜狗词库转Gboard工具"),
 		input,
 		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 			LabelInfo,
