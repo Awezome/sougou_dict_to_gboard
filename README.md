@@ -4,14 +4,11 @@
 
 
 
-<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/screenshot.png" width = "450" height = "240"/>
+<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/screenshot.png" width = "446" height = "188"/>
 
 
 # 下载地址
 https://github.com/Awezome/sougou_dict_to_gboard/releases
-
-windows 下载 sougou_to_gboard_win.zip    
-mac 下载 sougou_to_gboard_mac.zip
 
 
 # 使用说明
