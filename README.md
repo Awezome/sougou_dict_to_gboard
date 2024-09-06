@@ -20,8 +20,3 @@ https://github.com/Awezome/sougou_dict_to_gboard/releases
 
 # 问题反馈
 https://github.com/Awezome/sougou_dict_to_gboard/issues
-
-# 鼓励
-如果小工具好用，右上角点个star。有钱的微信打个赏。多谢。
-
-<img src="https://raw.githubusercontent.com/Awezome/sougou_dict_to_gboard/master/wechat_pay.jpg" width = "300" height = "300"/>
